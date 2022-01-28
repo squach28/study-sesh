@@ -34,7 +34,13 @@ struct ContentView: View {
     
     var body: some View {
         ZStack {
-            VStack {
+            VStack(spacing: 20) {
+                AsyncImage(url: URL(string: "https://media.giphy.com/media/H62NM1ab7wzMXURdoi/giphy.gif")
+                           , content: { image in image.resizable() }, placeholder: {
+                    ProgressView()
+                })
+                    .edgesIgnoringSafeArea(.all)
+
                 HStack(spacing: 50) {
                     
                     Button(action: {
@@ -51,8 +57,9 @@ struct ContentView: View {
                             .resizable()
                             .frame(width: 25, height: 25)
                     })
-                
-                
+                        .foregroundColor(Color(hue: 0.381, saturation: 0.844, brightness: 0.721))
+                    
+                    
                     Button(action: {
                         self.isPlaying.toggle()
                         if isPlaying {
@@ -72,13 +79,14 @@ struct ContentView: View {
                             Image(systemName: "pause.circle")
                                 .resizable()
                                 .frame(width: 50, height: 50)
-
+                            
                         } else {
                             Image(systemName: "play.circle")
                                 .resizable()
                                 .frame(width: 50, height: 50)
                         }
                     })
+                        .foregroundColor(Color(hue: 0.381, saturation: 0.844, brightness: 0.721))
                     
                     Button(action: {
                         if queuePlayer.items().count == 1 {
@@ -93,16 +101,17 @@ struct ContentView: View {
                             .resizable()
                             .frame(width: 25, height: 25)
                     })
+                        .foregroundColor(Color(hue: 0.381, saturation: 0.844, brightness: 0.721))
                     
                 }
                 
                 ZStack(alignment: .leading) {
                     Rectangle()
-                        .foregroundColor(.gray)
+                        .foregroundColor(Color(hue: 0.397, saturation: 0.609, brightness: 0.888))
                         .opacity(0.3)
                         .frame(width: 325, height: 20)
                     Rectangle()
-                        .foregroundColor(.black)
+                        .foregroundColor(Color(hue: 0.381, saturation: 0.844, brightness: 0.721))
                         .frame(width: min((325 / (currentItemDuration.seconds == 0 ? 1 : currentItemDuration.seconds)) * currentTime.seconds, 325), height: 20)
                         .animation(.linear, value: 1.0)
                     
@@ -117,22 +126,22 @@ struct ContentView: View {
                     Text("\( Int(currentItemDuration.seconds / 60)):\(String(format: "%02d", Int(currentItemDuration.seconds.truncatingRemainder(dividingBy: 60))))")
                 }
                 .padding()
-
+                
             }
         }
         
     }
     
     func onComplete(url: String) {
-
+        
         queuePlayer.audiovisualBackgroundPlaybackPolicy = .continuesIfPossible
         addPeriodicTimeObserver(player: queuePlayer)
-
+        
         for song in storageManager.songs {
             let songURL = URL(string: song)!
             let item = AVPlayerItem(url: songURL)
             self.queuePlayer.insert(item, after: nil)
-
+            
         }
         self.observer = queuePlayer.currentItem?.observe(\AVPlayerItem.status) { item, _ in
             guard let item = queuePlayer.currentItem else { return }
@@ -142,7 +151,7 @@ struct ContentView: View {
         }
         
         queuePlayer.play()
-
+        
     }
     
     func addPeriodicTimeObserver(player: AVPlayer) {
@@ -151,7 +160,7 @@ struct ContentView: View {
         timeObserverToken = player.addPeriodicTimeObserver(forInterval: time, queue: . main) { time in
             self.currentTime = time
             print(abs(min((325 / currentItemDuration.seconds) * currentTime.seconds, 325)))
-           
+            
         }
     }
     
