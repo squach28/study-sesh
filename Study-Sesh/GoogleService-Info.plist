@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>103935600402-8aiub3f783tgc0ccb16a4b5bfnu7t033.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.103935600402-8aiub3f783tgc0ccb16a4b5bfnu7t033</string>
+	<key>API_KEY</key>
+	<string>AIzaSyCOqCb6HEDZ4HY-5MEGPuwWKI2Zn-5AmSQ</string>
+	<key>GCM_SENDER_ID</key>
+	<string>103935600402</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.squach.Study-Sesh</string>
+	<key>PROJECT_ID</key>
+	<string>study-sesh-15612</string>
+	<key>STORAGE_BUCKET</key>
+	<string>study-sesh-15612.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:103935600402:ios:4f3043d6e17cdd2e8bf5cb</string>
+</dict>
+</plist>
