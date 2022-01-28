@@ -42,6 +42,8 @@ struct ContentView: View {
                             let beginning = CMTime(value: 0, timescale: 1)
                             queuePlayer.currentItem?.seek(to: beginning, completionHandler: nil)
                         } else {
+                            guard let duration = previousSong?.duration else { return }
+                            currentItemDuration = duration
                             queuePlayer.replaceCurrentItem(with: previousSong)
                         }
                     }, label: {
@@ -79,9 +81,13 @@ struct ContentView: View {
                     })
                     
                     Button(action: {
-                        guard let previous = queuePlayer.currentItem?.asset else { return }
-                        self.previousSong = AVPlayerItem(asset: previous)
-                        skipToNextSong()
+                        if queuePlayer.items().count == 1 {
+                            return
+                        } else {
+                            guard let previous = queuePlayer.currentItem?.asset else { return }
+                            self.previousSong = AVPlayerItem(asset: previous)
+                            skipToNextSong()
+                        }
                     }, label: {
                         Image(systemName: "forward.fill")
                             .resizable()
