@@ -47,108 +47,88 @@ struct ContentView: View {
                     .padding()
                     .animation(.easeIn, value: 1.0)
                 VStack(spacing: -10) {
-                    // Audio Progress Bar with current time and duration
-                    // TODO: make Audio Progress Bar and current time/duration into a component that takes in a parameter: AVQueuePlayer
-                    ZStack(alignment: .leading) {
-                        Rectangle()
-                            .foregroundColor(Color(hue: 0.397, saturation: 0.609, brightness: 0.888))
-                            .opacity(0.3)
-                            .frame(width: 325, height: 20)
-                        Rectangle()
-                            .foregroundColor(Color(hue: 0.381, saturation: 0.844, brightness: 0.721))
-                            .frame(width: min((325 / (currentItemDuration.seconds == 0 ? 1 : currentItemDuration.seconds)) * currentTime.seconds, 325), height: 20)
-                            .animation(.linear, value: 1.0)
-                        
-                        
-                    }
-                    .cornerRadius(45.0)
-                    .padding()
-                    // End of Audio Progress Bar
                     
-                    // Current time and duration
-                    HStack {
-                        Text(currentItemDuration.seconds != 0 ? "\( Int(currentTime.seconds / 60)):\(String(format: "%02d", Int(currentTime.seconds.truncatingRemainder(dividingBy: 60))))" : "-:--")
-                        Spacer()
-                        Text(currentItemDuration.seconds != 0 ? "\( Int(currentItemDuration.seconds / 60)):\(String(format: "%02d", Int(currentItemDuration.seconds.truncatingRemainder(dividingBy: 60))))" : "-:--")
-                    }
-                    .padding()
-                    
-                    // End of current time and duration
-                }
-                
-                // Audio player controls
-                HStack(spacing: 50) {
-                    Button(action: {
-                        if songIndex - 1 < 0 {
-                            let beginning = CMTime(value: 0, timescale: 1)
-                            queuePlayer.currentItem?.seek(to: beginning, completionHandler: nil)
-                        } else {
-                            skipToPreviousSong()
-                            if imageIndex - 1 >= 0 {
-                                imageIndex -= 1
-                            }
-                            
-                        }
-                    }, label: {
-                        Image(systemName: "backward.fill")
-                            .resizable()
-                            .frame(width: 25, height: 25)
-                    })
-                        .foregroundColor(Color(hue: 0.397, saturation: 0.728, brightness: 0.809))
+                    AudioProgressBar(currentItemDuration: $currentItemDuration, currentTime: $currentTime)
                     
                     
-                    Button(action: {
-                        self.isPlaying.toggle()
-                        if isPlaying {
-                            if queuePlayer.currentItem != nil {
-                                queuePlayer.play()
+                    // Audio player controls
+                    HStack(spacing: 50) {
+                        Button(action: {
+                            if songIndex - 1 < 0 {
+                                let beginning = CMTime(value: 0, timescale: 1)
+                                queuePlayer.currentItem?.seek(to: beginning, completionHandler: nil)
                             } else {
-                                onComplete()
+                                skipToPreviousSong()
+                                if imageIndex - 1 >= 0 {
+                                    imageIndex -= 1
+                                }
+                                
                             }
-                            
-                            
-                        } else {
-                            queuePlayer.pause()
-                        }
-                    }, label: {
-                        if isPlaying {
-                            Image(systemName: "pause.circle")
+                        }, label: {
+                            Image(systemName: "backward.fill")
                                 .resizable()
-                                .frame(width: 50, height: 50)
-                            
-                        } else {
-                            Image(systemName: "play.circle")
+                                .frame(width: 25, height: 25)
+                        })
+                            .foregroundColor(songIndex > 0 ? Color(hue: 0.397, saturation: 0.728, brightness: 0.809) : .gray)
+                            .disabled(songIndex == 0)
+                        
+                        
+                        Button(action: {
+                            self.isPlaying.toggle()
+                            if isPlaying {
+                                if queuePlayer.currentItem != nil {
+                                    queuePlayer.play()
+                                } else {
+                                    play()
+                                }
+                                
+                                
+                            } else {
+                                queuePlayer.pause()
+                            }
+                        }, label: {
+                            if isPlaying {
+                                Image(systemName: "pause.circle")
+                                    .resizable()
+                                    .frame(width: 50, height: 50)
+                                
+                            } else {
+                                Image(systemName: "play.circle")
+                                    .resizable()
+                                    .frame(width: 50, height: 50)
+                            }
+                        })
+                            .foregroundColor(storageManager.songs.count > 0 ? Color(hue: 0.381, saturation: 0.844, brightness: 0.721) : .gray)
+                            .disabled(storageManager.songs.count == 0)
+                        
+                        Button(action: {
+                            if songIndex + 1 >= storageManager.songs.count {
+                                return
+                            } else {
+                                print("skipping")
+                                skipToNextSong()
+                                if imageIndex + 1 < storageManager.images.count {
+                                    imageIndex += 1
+                                }
+                                
+                            }
+                        }, label: {
+                            Image(systemName: "forward.fill")
                                 .resizable()
-                                .frame(width: 50, height: 50)
-                        }
-                    })
-                        .foregroundColor(Color(hue: 0.381, saturation: 0.844, brightness: 0.721))
+                                .frame(width: 25, height: 25)
+                        })
+                            .foregroundColor(songIndex < storageManager.songs.count - 1 ? Color(hue: 0.397, saturation: 0.728, brightness: 0.809) : .gray)
+                            .disabled(songIndex + 1 >= storageManager.songs.count)
+                        
+                    }
+                    .padding(.bottom)
+                    // End of Audio Player controls
                     
-                    Button(action: {
-                        if queuePlayer.items().count == 1 {
-                            return
-                        } else {
-                            skipToNextSong()
-                            if imageIndex + 1 < storageManager.images.count {
-                                imageIndex += 1
-                            }
-                            
-                        }
-                    }, label: {
-                        Image(systemName: "forward.fill")
-                            .resizable()
-                            .frame(width: 25, height: 25)
-                    })
-                        .foregroundColor(Color(hue: 0.397, saturation: 0.728, brightness: 0.809))
                     
                 }
-                .padding(.bottom)
-                // End of Audio Player controls
-                
-                
             }
+            
         }
-        
     }
     
     // Adds an observer to the timer
@@ -181,15 +161,17 @@ struct ContentView: View {
     // Plays the current song
     // TODO: change method function from onComplete() to play()
     // TODO: remove adding songs to queue; handled by tracking songIndex
-    func onComplete() {
+    func play() {
         addPeriodicTimeObserver(player: queuePlayer)
-        
-        for song in storageManager.songs {
-            let songURL = URL(string: song)!
-            let item = AVPlayerItem(url: songURL)
-            self.queuePlayer.insert(item, after: nil)
-            
-        }
+        /*
+         for song in storageManager.songs {
+         let songURL = URL(string: song)!
+         let item = AVPlayerItem(url: songURL)
+         self.queuePlayer.insert(item, after: nil)
+         
+         } */
+        let currentSong = AVPlayerItem(url: URL(string: storageManager.songs[songIndex])!)
+        queuePlayer.replaceCurrentItem(with: currentSong)
         self.observer = queuePlayer.currentItem?.observe(\AVPlayerItem.status) { item, _ in
             guard let item = queuePlayer.currentItem else { return }
             if item.status == .readyToPlay {
@@ -215,7 +197,6 @@ struct ContentView: View {
                 }
             }
         }
-        
     }
 }
 

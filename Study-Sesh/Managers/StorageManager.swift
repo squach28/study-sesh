@@ -10,7 +10,6 @@ import FirebaseStorage
 
 class StorageManager: ObservableObject {
     let storage = Storage.storage()
-    @Published var url: String? = ""
     @Published var songs: [String] = [String]()
     @Published var images: [String] = [String]()
     
@@ -19,6 +18,8 @@ class StorageManager: ObservableObject {
         fetchSongs()
     }
     
+    // Fetches the songs from the database
+    // Stores the download URLs into songs variable
     func fetchSongs() {
         let storageRef = storage.reference()
         let songsRef = storageRef.child("songs")
@@ -37,6 +38,7 @@ class StorageManager: ObservableObject {
                     guard let urlAsString = downloadURL?.absoluteString else {
                         return
                     }
+                    print("song url: \(urlAsString)")
                     self.songs.append(urlAsString)
                 })
             }
@@ -44,6 +46,8 @@ class StorageManager: ObservableObject {
         )
     }
     
+    // Fetches the images from the database
+    // Stores the download URLS into images variable
     func fetchImages() {
         let storageRef = storage.reference()
         let imagesRef = storageRef.child("images")
