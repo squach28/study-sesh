@@ -26,6 +26,7 @@ struct ContentView: View {
     @State var currentItemDuration: CMTime = CMTime(seconds: 0, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
     @State var timeObserverToken: Any?
     @State var currentTime: CMTime = CMTime(seconds: 0, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
+    @State var previousSong: AVPlayerItem?
     
     
     
@@ -35,7 +36,12 @@ struct ContentView: View {
                 HStack(spacing: 50) {
                     
                     Button(action: {
-                        queuePlayer.advanceToNextItem()
+                        if previousSong == nil {
+                            let beginning = CMTime(value: 0, timescale: 1)
+                            queuePlayer.currentItem?.seek(to: beginning, completionHandler: nil)
+                        } else {
+                            queuePlayer.replaceCurrentItem(with: previousSong)
+                        }
                     }, label: {
                         Image(systemName: "backward.fill")
                             .resizable()
@@ -71,6 +77,8 @@ struct ContentView: View {
                     })
                     
                     Button(action: {
+                        guard let previous = queuePlayer.currentItem?.asset else { return }
+                        self.previousSong = AVPlayerItem(asset: previous)
                         skipToNextSong()
                     }, label: {
                         Image(systemName: "forward.fill")
