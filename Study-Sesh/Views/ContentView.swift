@@ -14,7 +14,9 @@ import AVKit
 struct ContentView: View {
     
     init() {
-        
+        print("current time: \(currentTime.seconds)")
+        print("current time duration: \(currentItemDuration.seconds)")
+        print(abs(min((325 / currentItemDuration.seconds) * currentTime.seconds, 325)))
     }
     
     @State var observer: NSKeyValueObservation?
@@ -95,7 +97,7 @@ struct ContentView: View {
                         .frame(width: 325, height: 20)
                     Rectangle()
                         .foregroundColor(.black)
-                        .frame(width: abs(min((325 / currentItemDuration.seconds) * currentTime.seconds, 325)), height: 20)
+                        .frame(width: min((325 / (currentItemDuration.seconds == 0 ? 1 : currentItemDuration.seconds)) * currentTime.seconds, 325), height: 20)
                         .animation(.linear, value: 1.0)
                     
                     
@@ -142,6 +144,7 @@ struct ContentView: View {
         let time = CMTime(seconds: 1, preferredTimescale: timeScale)
         timeObserverToken = player.addPeriodicTimeObserver(forInterval: time, queue: . main) { time in
             self.currentTime = time
+            print(abs(min((325 / currentItemDuration.seconds) * currentTime.seconds, 325)))
            
         }
     }
