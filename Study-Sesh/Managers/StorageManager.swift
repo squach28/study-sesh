@@ -12,26 +12,11 @@ class StorageManager: ObservableObject {
     let storage = Storage.storage()
     @Published var url: String? = ""
     @Published var songs: [String] = [String]()
+    @Published var images: [String] = [String]()
     
     init() {
+        fetchImages()
         fetchSongs()
-    }
-    
-    func fetchSong(onComplete: @escaping (String) -> ()) {
-        let pathReference = storage.reference(forURL: "gs://study-sesh-15612.appspot.com/songs/유키카 YUKIKA - 03. 「서울여자 SOUL LADY」 (Official Audio).mp3")
-        
-        pathReference.downloadURL(completion: { downloadURL, error in
-            if let error = error {
-                print("Error getting download URL \(error)")
-            } else {
-                guard let url = downloadURL?.absoluteString else { return }
-                onComplete(url)
-                
-            }
-        })
-        
-        print(self.songs)
-        
     }
     
     func fetchSongs() {
@@ -57,6 +42,31 @@ class StorageManager: ObservableObject {
             }
         }
         )
+    }
+    
+    func fetchImages() {
+        let storageRef = storage.reference()
+        let imagesRef = storageRef.child("images")
+        imagesRef.listAll(completion: { result, error in
+            if let error = error {
+                print("Error getting images: \(error)")
+                return
+            }
+            
+            for reference in result.items {
+                reference.downloadURL(completion: { downloadURL, error in
+                    if let error = error {
+                        print("Error getting download URLs \(error)")
+                    }
+                    print("getting download url")
+                    guard let urlAsString = downloadURL?.absoluteString else { return }
+                    print("url:", urlAsString)
+                    self.images.append(urlAsString)
+                })
+            }
+            
+            
+        })
     }
     
     

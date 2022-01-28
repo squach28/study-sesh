@@ -13,14 +13,7 @@ import AVKit
 
 struct ContentView: View {
     
-    init() {
-        print("current time: \(currentTime.seconds)")
-        print("current time duration: \(currentItemDuration.seconds)")
-        print(abs(min((325 / currentItemDuration.seconds) * currentTime.seconds, 325)))
-    }
-    
     @State var observer: NSKeyValueObservation?
-    let storage = Storage.storage()
     @State var isPlaying: Bool = false
     @StateObject var storageManager = StorageManager()
     @State var queuePlayer = AVQueuePlayer()
@@ -28,36 +21,73 @@ struct ContentView: View {
     @State var currentItemDuration: CMTime = CMTime(seconds: 0, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
     @State var timeObserverToken: Any?
     @State var currentTime: CMTime = CMTime(seconds: 0, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
-    @State var previousSong: AVPlayerItem?
+    @State var imageIndex: Int = 0
+    @State var songIndex: Int = 0
     
-    
+    init() {
+        let audioSession = AVAudioSession.sharedInstance()
+        do {
+            try audioSession.setCategory(AVAudioSession.Category.playback)
+        } catch {
+            print("Setting category to AVAudioSessionCategoryPlayback failed.")
+        }
+    }
     
     var body: some View {
         ZStack {
             VStack(spacing: 20) {
-                AsyncImage(url: URL(string: "https://media.giphy.com/media/H62NM1ab7wzMXURdoi/giphy.gif")
+                AsyncImage(url: URL(string: storageManager.images.isEmpty ? "" : storageManager.images[imageIndex])
                            , content: { image in image.resizable() }, placeholder: {
                     ProgressView()
                 })
                     .edgesIgnoringSafeArea(.all)
-
+                    .frame(maxWidth: 400, maxHeight: 400)
+                    .cornerRadius(30)
+                    .padding()
+                    .animation(.easeIn, value: 1.0)
+                VStack(spacing: -10) {
+                    ZStack(alignment: .leading) {
+                        Rectangle()
+                            .foregroundColor(Color(hue: 0.397, saturation: 0.609, brightness: 0.888))
+                            .opacity(0.3)
+                            .frame(width: 325, height: 20)
+                        Rectangle()
+                            .foregroundColor(Color(hue: 0.381, saturation: 0.844, brightness: 0.721))
+                            .frame(width: min((325 / (currentItemDuration.seconds == 0 ? 1 : currentItemDuration.seconds)) * currentTime.seconds, 325), height: 20)
+                            .animation(.linear, value: 1.0)
+                        
+                        
+                    }
+                    .cornerRadius(45.0)
+                    .padding()
+                    
+                    HStack {
+                        Text(currentItemDuration.seconds != 0 ? "\( Int(currentTime.seconds / 60)):\(String(format: "%02d", Int(currentTime.seconds.truncatingRemainder(dividingBy: 60))))" : "-:--")
+                        Spacer()
+                        Text(currentItemDuration.seconds != 0 ? "\( Int(currentItemDuration.seconds / 60)):\(String(format: "%02d", Int(currentItemDuration.seconds.truncatingRemainder(dividingBy: 60))))" : "-:--")
+                    }
+                    .padding()
+                }
+                
                 HStack(spacing: 50) {
                     
                     Button(action: {
-                        if previousSong == nil {
+                        if songIndex - 1 < 0 {
                             let beginning = CMTime(value: 0, timescale: 1)
                             queuePlayer.currentItem?.seek(to: beginning, completionHandler: nil)
                         } else {
-                            guard let duration = previousSong?.duration else { return }
-                            currentItemDuration = duration
-                            queuePlayer.replaceCurrentItem(with: previousSong)
+                            skipToPreviousSong()
+                            if imageIndex - 1 >= 0 {
+                                imageIndex -= 1
+                            }
+                           
                         }
                     }, label: {
                         Image(systemName: "backward.fill")
                             .resizable()
                             .frame(width: 25, height: 25)
                     })
-                        .foregroundColor(Color(hue: 0.381, saturation: 0.844, brightness: 0.721))
+                        .foregroundColor(Color(hue: 0.397, saturation: 0.728, brightness: 0.809))
                     
                     
                     Button(action: {
@@ -66,8 +96,7 @@ struct ContentView: View {
                             if queuePlayer.currentItem != nil {
                                 queuePlayer.play()
                             } else {
-                                storageManager.fetchSong(onComplete: onComplete)
-                                print("songs:", storageManager.songs)
+                                onComplete()
                             }
                             
                             
@@ -92,49 +121,29 @@ struct ContentView: View {
                         if queuePlayer.items().count == 1 {
                             return
                         } else {
-                            guard let previous = queuePlayer.currentItem?.asset else { return }
-                            self.previousSong = AVPlayerItem(asset: previous)
                             skipToNextSong()
+                            if imageIndex + 1 < storageManager.images.count {
+                                imageIndex += 1
+                            }
+                            
                         }
                     }, label: {
                         Image(systemName: "forward.fill")
                             .resizable()
                             .frame(width: 25, height: 25)
                     })
-                        .foregroundColor(Color(hue: 0.381, saturation: 0.844, brightness: 0.721))
+                        .foregroundColor(Color(hue: 0.397, saturation: 0.728, brightness: 0.809))
                     
                 }
+                .padding(.bottom)
                 
-                ZStack(alignment: .leading) {
-                    Rectangle()
-                        .foregroundColor(Color(hue: 0.397, saturation: 0.609, brightness: 0.888))
-                        .opacity(0.3)
-                        .frame(width: 325, height: 20)
-                    Rectangle()
-                        .foregroundColor(Color(hue: 0.381, saturation: 0.844, brightness: 0.721))
-                        .frame(width: min((325 / (currentItemDuration.seconds == 0 ? 1 : currentItemDuration.seconds)) * currentTime.seconds, 325), height: 20)
-                        .animation(.linear, value: 1.0)
-                    
-                    
-                }
-                .cornerRadius(45.0)
-                .padding()
-                
-                HStack(spacing: 20) {
-                    Text("\( Int(currentTime.seconds / 60)):\(String(format: "%02d", Int(currentTime.seconds.truncatingRemainder(dividingBy: 60))))")
-                    Spacer()
-                    Text("\( Int(currentItemDuration.seconds / 60)):\(String(format: "%02d", Int(currentItemDuration.seconds.truncatingRemainder(dividingBy: 60))))")
-                }
-                .padding()
                 
             }
         }
         
     }
     
-    func onComplete(url: String) {
-        
-        queuePlayer.audiovisualBackgroundPlaybackPolicy = .continuesIfPossible
+    func onComplete() {
         addPeriodicTimeObserver(player: queuePlayer)
         
         for song in storageManager.songs {
@@ -149,7 +158,7 @@ struct ContentView: View {
                 currentItemDuration = queuePlayer.currentItem!.duration
             }
         }
-        
+        queuePlayer.audiovisualBackgroundPlaybackPolicy = .continuesIfPossible
         queuePlayer.play()
         
     }
@@ -164,14 +173,35 @@ struct ContentView: View {
         }
     }
     
-    func skipToNextSong() {
-        queuePlayer.advanceToNextItem()
-        self.observer = queuePlayer.currentItem?.observe(\AVPlayerItem.status) { item, _ in
-            guard let item = queuePlayer.currentItem else { return }
-            if item.status == .readyToPlay {
-                currentItemDuration = queuePlayer.currentItem!.duration
+    func skipToPreviousSong() {
+        if songIndex - 1 >= 0 {
+            songIndex -= 1
+            let songURL = storageManager.songs[songIndex]
+            let previousSong = AVPlayerItem(url: URL(string: songURL)!)
+            queuePlayer.replaceCurrentItem(with : previousSong)
+            self.observer = queuePlayer.currentItem?.observe(\AVPlayerItem.status) { item, _ in
+                guard let item = queuePlayer.currentItem else { return }
+                if item.status == .readyToPlay {
+                    currentItemDuration = queuePlayer.currentItem!.duration
+                }
             }
         }
+    }
+    
+    func skipToNextSong() {
+        if songIndex + 1 < storageManager.songs.count {
+            songIndex += 1
+            let songURL = storageManager.songs[songIndex]
+            let nextSong = AVPlayerItem(url: URL(string: songURL)!)
+            queuePlayer.replaceCurrentItem(with : nextSong)
+            self.observer = queuePlayer.currentItem?.observe(\AVPlayerItem.status) { item, _ in
+                guard let item = queuePlayer.currentItem else { return }
+                if item.status == .readyToPlay {
+                    currentItemDuration = queuePlayer.currentItem!.duration
+                }
+            }
+        }
+
     }
     
     func getProgressBarWidth(seconds: Int) -> Int {
