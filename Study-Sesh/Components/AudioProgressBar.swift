@@ -15,11 +15,11 @@ struct AudioProgressBar: View {
         // Audio Progress Bar with current time and duration
         ZStack(alignment: .leading) {
             Rectangle()
-                .foregroundColor(Color(hue: 0.397, saturation: 0.609, brightness: 0.888))
+                .foregroundColor(Color(hue: 0.775, saturation: 0.361, brightness: 0.921))
                 .opacity(0.3)
                 .frame(width: 325, height: 20)
             Rectangle()
-                .foregroundColor(Color(hue: 0.381, saturation: 0.844, brightness: 0.721))
+                .foregroundColor(.purple)
                 .frame(width: min((325 / (currentItemDuration.seconds == 0 ? 1 : currentItemDuration.seconds)) * currentTime.seconds, 325), height: 20)
                 .animation(.linear, value: 1.0)
             
