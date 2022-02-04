@@ -17,10 +17,10 @@ struct AudioProgressBar: View {
             Rectangle()
                 .foregroundColor(Color(hue: 0.775, saturation: 0.361, brightness: 0.921))
                 .opacity(0.3)
-                .frame(width: 325, height: 20)
+                .frame(width: 325, height: 10)
             Rectangle()
                 .foregroundColor(.purple)
-                .frame(width: min((325 / (currentItemDuration.seconds == 0 ? 1 : currentItemDuration.seconds)) * currentTime.seconds, 325), height: 20)
+                .frame(width: min((325 / (currentItemDuration.seconds == 0 ? 1 : currentItemDuration.seconds)) * currentTime.seconds, 325), height: 10)
                 .animation(.linear, value: 1.0)
             
             

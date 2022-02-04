@@ -10,7 +10,7 @@ import FirebaseStorage
 
 class StorageManager: ObservableObject {
     let storage = Storage.storage()
-    @Published var songs: [String] = [String]()
+    @Published var songs: [SongInfo] = [SongInfo]()
     @Published var images: [String] = [String]()
     @Published var videos: [String] = [String]()
     
@@ -22,6 +22,7 @@ class StorageManager: ObservableObject {
     
     // Fetches the songs from the database
     // Stores the download URLs into songs variable
+    // TODO: make custom class that stores download URLs and metadata for song name and artist 
     func fetchSongs() {
         let storageRef = storage.reference()
         let songsRef = storageRef.child("songs")
@@ -31,18 +32,40 @@ class StorageManager: ObservableObject {
             }
             
             for reference in result.items {
+                var url = ""
+                var song = ""
+                var artist = ""
                 reference.downloadURL(completion: { downloadURL, error in
                     if let error = error {
-                        print("Error getting download URLs \(error)")
+                        print("Error getting download URLs: \(error)")
                         return
                     }
                     
                     guard let urlAsString = downloadURL?.absoluteString else {
                         return
                     }
-                    print("song url: \(urlAsString)")
-                    self.songs.append(urlAsString)
+                    url = urlAsString
+                    
+                    reference.getMetadata(completion: { metadata, error in
+                        if let error = error {
+                            print("Error getting metadata: \(error)")
+                        }
+                        
+                        guard let songMetadata = metadata?.customMetadata else {
+                            return
+                        }
+                        print("song metadata: \(songMetadata)")
+                        print("song: \(songMetadata["song"] ?? "empty")")
+                        song = songMetadata["song"] ?? ""
+                        artist = songMetadata["artist"] ?? ""
+                        let songInfo = SongInfo(song: song, artist: artist, downloadURL: url)
+                        self.songs.append(songInfo)
+                    })
+
                 })
+                
+
+                
             }
         }
         )
@@ -66,7 +89,6 @@ class StorageManager: ObservableObject {
                     }
                     print("getting download url")
                     guard let urlAsString = downloadURL?.absoluteString else { return }
-                    print("url:", urlAsString)
                     self.images.append(urlAsString)
                 })
             }
@@ -87,7 +109,7 @@ class StorageManager: ObservableObject {
             for video in result.items {
                 video.downloadURL(completion: { downloadURL, error in
                     if let error = error {
-                        print("Error getting donwload URLs: \(error)")
+                        print("Error getting download URLs: \(error)")
                     }
                     guard let urlAsString = downloadURL?.absoluteString else { return }
                     self.videos.append(urlAsString)

@@ -37,7 +37,7 @@ struct ContentView: View {
     var body: some View {
         NavigationView {
             ZStack {
-                VStack {
+                VStack(alignment: .leading) {
                     HStack {
                         Button(action: {}, label: {
                             Image(systemName: "info.circle.fill")
@@ -55,9 +55,7 @@ struct ContentView: View {
                             
                         }
                     }
-                    .padding(.leading)
-                    .padding(.trailing)
-                    .padding(.bottom)
+                    .padding()
                     
                     AsyncImage(url: URL(string: storageManager.images.isEmpty ? "" : storageManager.images[imageIndex])
                                , content: { image in image.resizable() }, placeholder: {
@@ -68,7 +66,11 @@ struct ContentView: View {
                         .cornerRadius(30)
                         .padding()
                         .transition(.move(edge: .leading))
-                    VStack(spacing: -10) {
+                    VStack {
+                        
+                        
+                            SongDetails(name: !storageManager.songs.isEmpty  ? storageManager.songs[songIndex].song : "" , artist: !storageManager.songs.isEmpty ? storageManager.songs[songIndex].artist : "" )
+     
                         
                         AudioProgressBar(currentItemDuration: $currentItemDuration, currentTime: $currentTime)
                         
@@ -91,7 +93,7 @@ struct ContentView: View {
                                     .resizable()
                                     .frame(width: 25, height: 25)
                             })
-                                .foregroundColor(songIndex > 0 ? Color(hue: 0.397, saturation: 0.728, brightness: 0.809) : .gray)
+                                .foregroundColor(songIndex > 0 ? Color(hue: 0.775, saturation: 0.361, brightness: 0.921) : .gray)
                                 .disabled(songIndex == 0)
                             
                             
@@ -139,7 +141,7 @@ struct ContentView: View {
                                     .resizable()
                                     .frame(width: 25, height: 25)
                             })
-                                .foregroundColor(songIndex + 1 >= storageManager.songs.count ? .gray : .gray)
+                                .foregroundColor(songIndex + 1 >= storageManager.songs.count ? .gray : Color(hue: 0.775, saturation: 0.361, brightness: 0.921))
                                 .disabled(songIndex + 1 >= storageManager.songs.count)
                             
                         }
@@ -175,7 +177,7 @@ struct ContentView: View {
     func skipToPreviousSong() {
         if songIndex - 1 >= 0 {
             songIndex -= 1
-            let songURL = storageManager.songs[songIndex]
+            let songURL = storageManager.songs[songIndex].downloadURL
             let previousSong = AVPlayerItem(url: URL(string: songURL)!)
             queuePlayer.replaceCurrentItem(with : previousSong)
             self.observer = queuePlayer.currentItem?.observe(\AVPlayerItem.status) { item, _ in
@@ -190,7 +192,7 @@ struct ContentView: View {
     // Plays the current song
     func play() {
         addPeriodicTimeObserver(player: queuePlayer)
-        let currentSong = AVPlayerItem(url: URL(string: storageManager.songs[songIndex])!)
+        let currentSong = AVPlayerItem(url: URL(string: storageManager.songs[songIndex].downloadURL)!)
         queuePlayer.replaceCurrentItem(with: currentSong)
         self.observer = queuePlayer.currentItem?.observe(\AVPlayerItem.status) { item, _ in
             guard let item = queuePlayer.currentItem else { return }
@@ -208,7 +210,7 @@ struct ContentView: View {
         if songIndex + 1 < storageManager.songs.count {
             songIndex += 1
             let songURL = storageManager.songs[songIndex]
-            let nextSong = AVPlayerItem(url: URL(string: songURL)!)
+            let nextSong = AVPlayerItem(url: URL(string: songURL.downloadURL)!)
             queuePlayer.replaceCurrentItem(with : nextSong)
             self.observer = queuePlayer.currentItem?.observe(\AVPlayerItem.status) { item, _ in
                 guard let item = queuePlayer.currentItem else { return }

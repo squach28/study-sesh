@@ -13,9 +13,8 @@ struct SongQueueView: View {
 
     
     var body: some View {
-        List(storageManager.songs, id: \.self) { song in
-            Text(song)
-        }
+        // TODO: replace list with song title and artist from metadata in storage
+        Text("Song Queue")
     }
 }
 

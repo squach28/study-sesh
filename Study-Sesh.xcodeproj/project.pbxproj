@@ -26,6 +26,8 @@
 		2A0E159E27A1C1C900369132 /* StorageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A0E159D27A1C1C900369132 /* StorageManager.swift */; };
 		2A2990C427AA3182006A4582 /* SongQueueView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A2990C327AA3182006A4582 /* SongQueueView.swift */; };
 		2A93C40227A4AD8100CF9508 /* AudioProgressBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A93C40127A4AD8100CF9508 /* AudioProgressBar.swift */; };
+		2AA2C32227ACA4CD00595836 /* SongDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AA2C32127ACA4CD00595836 /* SongDetails.swift */; };
+		2AA2C32427ACA81D00595836 /* SongInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AA2C32327ACA81D00595836 /* SongInfo.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -39,6 +41,8 @@
 		2A0E159F27A1CD1D00369132 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		2A2990C327AA3182006A4582 /* SongQueueView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SongQueueView.swift; sourceTree = "<group>"; };
 		2A93C40127A4AD8100CF9508 /* AudioProgressBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioProgressBar.swift; sourceTree = "<group>"; };
+		2AA2C32127ACA4CD00595836 /* SongDetails.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SongDetails.swift; sourceTree = "<group>"; };
+		2AA2C32327ACA81D00595836 /* SongInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SongInfo.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -115,6 +119,7 @@
 		2A0E159B27A1C02100369132 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				2AA2C32327ACA81D00595836 /* SongInfo.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -131,6 +136,7 @@
 			isa = PBXGroup;
 			children = (
 				2A93C40127A4AD8100CF9508 /* AudioProgressBar.swift */,
+				2AA2C32127ACA4CD00595836 /* SongDetails.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -223,6 +229,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				2A0E159E27A1C1C900369132 /* StorageManager.swift in Sources */,
+				2AA2C32227ACA4CD00595836 /* SongDetails.swift in Sources */,
+				2AA2C32427ACA81D00595836 /* SongInfo.swift in Sources */,
 				2A93C40227A4AD8100CF9508 /* AudioProgressBar.swift in Sources */,
 				2A2990C427AA3182006A4582 /* SongQueueView.swift in Sources */,
 				2A0E157627A1BDD700369132 /* ContentView.swift in Sources */,
