@@ -46,7 +46,7 @@ struct ContentView: View {
                                 .foregroundColor(.purple)
                         })
                         Spacer()
-                        NavigationLink(destination: SongQueueView(storageManager: storageManager)) {
+                        NavigationLink(destination: SongQueueView(storageManager: storageManager, queuePlayer: $queuePlayer, songIndex: $songIndex)) {
                             
                             Image(systemName: "music.note.list")
                                 .resizable()

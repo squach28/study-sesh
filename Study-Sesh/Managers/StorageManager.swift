@@ -10,7 +10,7 @@ import FirebaseStorage
 
 class StorageManager: ObservableObject {
     let storage = Storage.storage()
-    @Published var songs: [SongInfo] = [SongInfo]()
+    @Published var songs: [Song] = [Song]()
     @Published var images: [String] = [String]()
     @Published var videos: [String] = [String]()
     
@@ -58,7 +58,7 @@ class StorageManager: ObservableObject {
                         print("song: \(songMetadata["song"] ?? "empty")")
                         song = songMetadata["song"] ?? ""
                         artist = songMetadata["artist"] ?? ""
-                        let songInfo = SongInfo(song: song, artist: artist, downloadURL: url)
+                        let songInfo = Song(song: song, artist: artist, downloadURL: url)
                         self.songs.append(songInfo)
                     })
 
